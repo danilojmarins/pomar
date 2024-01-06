@@ -1,12 +1,25 @@
-import express from 'express';
+import express, { json } from 'express';
+import cors from 'cors';
 import OracleDB from 'oracledb';
-import SpeciesRepository from './src/repositories/species.repository';
-import Species from './src/entities/species';
-import Tree from './src/entities/tree';
-import TreeRepository from './src/repositories/trees.repository';
-import Group from './src/entities/group';
+import { speciesRouter } from './src/routes/species.routes';
+import { treeRouter } from './src/routes/trees.routes';
+import { groupRouter } from './src/routes/groups.routes';
+import { harvestRouter } from './src/routes/harvests.routes';
 
 const app = express();
+
+app.use(cors({
+    origin: 'client:5173',
+    methods: [ 'GET', 'POST', 'PUT', 'DELETE' ],
+    credentials: true
+}));
+
+app.use(json());
+
+app.use('/species', speciesRouter);
+app.use('/trees', treeRouter);
+app.use('/groups', groupRouter);
+app.use('/harvests', harvestRouter);
 
 app.listen(5000, async () => {
     console.log('Rodando na porta 5000');
@@ -19,14 +32,6 @@ app.listen(5000, async () => {
             password: 'password',
             connectionString: 'oracledb:1521'
         });
-
-        const species = new Species('specie1');
-        const group = new Group('grupo1', 'grupo1');
-        const tree = new Tree('tree1', 18, species, undefined, [group]);
-        await new SpeciesRepository().create(species);
-        await new TreeRepository().create(tree);
-        const result = await new TreeRepository().findMany();
-        console.log(result![0].species)
     }
     catch (err) {
         console.error(err);
