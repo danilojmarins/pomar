@@ -12,7 +12,7 @@ export default class Name {
             throw new Error('name must have at most 64 characters');
         }
 
-        this._name = name;
+        this._name = name.trim();
     }
 
     get name(): string {

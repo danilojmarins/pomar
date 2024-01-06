@@ -1,8 +1,8 @@
 import generateId from "../utilities/id_generator";
-import Email from "../value_objects/email";
-import Id from "../value_objects/id";
-import Name from "../value_objects/name";
-import Password from "../value_objects/password"
+import Email from "../value_objects/email/email";
+import Id from "../value_objects/id/id";
+import Name from "../value_objects/name/name";
+import Password from "../value_objects/password/password"
 
 export default class User {
     private _id: Id;
