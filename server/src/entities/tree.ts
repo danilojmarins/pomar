@@ -10,14 +10,14 @@ export default class Tree {
     private _description: Description;
     private _age: Age;
     private _species: Species;
-    private _groups?: Group[];
+    private _groups: Group[];
 
     constructor(
         description: string,
         age: number,
         species: Species,
         id = generateId(),
-        groups: Group[] | undefined = undefined
+        groups: Group[]
     ) {
         this._id = new Id(id);
         this._description = new Description(description);
@@ -42,7 +42,7 @@ export default class Tree {
         return this._species;
     }
 
-    get groups(): Group[] | undefined {
+    get groups(): Group[] {
         return this._groups;
     }
 }

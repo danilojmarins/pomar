@@ -18,17 +18,32 @@ export default class GroupRepository implements GroupGateway {
         await executeQuery<Group>(query, params);
     }
 
-    async findMany(): Promise<Group[]> {
+    async findMany(): Promise<Group[] | undefined> {
         const query = `
             SELECT
                 id "id",
                 name "name",
-                description "description"
+                description "description",
+                CURSOR(
+                    SELECT
+                        id "id",
+                        description "description",
+                        age "age"
+                    FROM
+                        sys.trees t,
+                        sys.trees_groups tg
+                    WHERE
+                        t.id = tg.tree_id AND
+                        g.id = tg.group_id
+                ) as "trees"
             FROM
-                sys.groups
+                sys.groups g
         `;
         const result = await executeQuery<Group>(query);
-        return result.rows || [];
+        if (!result.rows) {
+            return undefined;
+        }
+        return result.rows;
     }
 
     async update(group: Group): Promise<void> {
@@ -49,23 +64,35 @@ export default class GroupRepository implements GroupGateway {
         await executeQuery<Group>(query, params);
     }
 
-    async findById(id: string): Promise<Group> {
+    async findById(id: string): Promise<Group | undefined> {
         const query = `
             SELECT
                 id "id",
                 name "name",
-                description "description"
+                description "description",
+                CURSOR(
+                    SELECT
+                        id "id",
+                        description "description",
+                        age "age"
+                    FROM
+                        sys.trees t,
+                        sys.trees_groups tg
+                    WHERE
+                        t.id = tg.tree_id AND
+                        g.id = tg.group_id
+                ) as "trees"
             FROM
-                sys.groups
+                sys.groups g
             WHERE
                 id = :id
         `;
         const params = { id: id };
         const result = await executeQuery<Group>(query, params);
         if (!result.rows || !result.rows[0]) {
-            throw new Error('no rows were found');
+            return undefined;
         }
-        return result.rows[0]
+        return result.rows[0];
     }
 
     async delete(id: string): Promise<void> {

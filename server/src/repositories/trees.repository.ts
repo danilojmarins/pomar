@@ -1,7 +1,23 @@
+import Group from "../entities/group";
 import Species from "../entities/species";
 import Tree from "../entities/tree";
 import TreeGateway from "../gateways/trees.gateway";
 import executeQuery from "../utilities/excute_query";
+
+interface TreeQueryDTO {
+    id: string;
+    description: string;
+    age: number;
+    species: {
+        id: string;
+        description: string;
+    }[];
+    groups: {
+        id: string;
+        name: string;
+        description: string;
+    }[];
+};
 
 export default class TreeRepository implements TreeGateway {
     async create(tree: Tree): Promise<void> {
@@ -20,7 +36,7 @@ export default class TreeRepository implements TreeGateway {
         await executeQuery<Tree>(query, params);
     }
 
-    async findMany(): Promise<Tree[]> {
+    async findMany(): Promise<Tree[] | undefined> {
         const query = `
             SELECT
                 id "id",
@@ -33,12 +49,43 @@ export default class TreeRepository implements TreeGateway {
                     FROM
                         sys.species s
                     WHERE s.id = t.species_id
-                ) as "species"
+                ) as "species",
+                CURSOR(
+                    SELECT
+                        id "id",
+                        name "name",
+                        description "description"
+                    FROM
+                        sys.groups g,
+                        sys.trees_groups tg
+                    WHERE
+                        g.id = tg.group_id AND
+                        t.id = tg.tree_id
+                ) as "groups"
             FROM
                 sys.trees t
         `;
-        const result = await executeQuery<Tree>(query);
-        return result.rows || [];
+        const result = await executeQuery<TreeQueryDTO>(query);
+        if (!result.rows) {
+            return undefined;
+        }
+        const trees: Tree[] = [];
+        const groups: Group[] = [];
+        result.rows.forEach((row) => {
+            const species = new Species(row.species[0].description, row.species[0].id);
+            row.groups.forEach((grp) => {
+                const group = new Group(grp.name, grp.description, grp.id);
+                groups.push(group);
+            });
+            const tree = new Tree(
+                row.description,
+                row.age, species,
+                row.id,
+                groups
+            );
+            trees.push(tree);
+        });
+        return trees;
     }
 
     async update(tree: Tree): Promise<void> {
@@ -61,7 +108,7 @@ export default class TreeRepository implements TreeGateway {
         await executeQuery<Tree>(query, params);
     }
 
-    async findById(id: string): Promise<Tree> {
+    async findById(id: string): Promise<Tree | undefined> {
         const query = `
             SELECT
                 id "id",
@@ -74,18 +121,30 @@ export default class TreeRepository implements TreeGateway {
                     FROM
                         sys.species s
                     WHERE s.id = t.species_id
-                ) as species
+                ) as "species"
             FROM
                 sys.trees t
             WHERE
                 id = :id
         `;
         const params = { id: id };
-        const result = await executeQuery<Tree>(query, params);
+        const result = await executeQuery<TreeQueryDTO>(query, params);
         if (!result.rows || !result.rows[0]) {
-            throw new Error('no rows were found');
+            return undefined;
         }
-        return result.rows[0]
+        const groups: Group[] = [];
+        const species = new Species(result.rows[0].species[0].description, result.rows[0].species[0].id);
+        result.rows[0].groups.forEach((grp) => {
+            const group = new Group(grp.name, grp.description, grp.id);
+            groups.push(group);
+        });
+        const tree = new Tree(
+            result.rows[0].description,
+            result.rows[0].age, species,
+            result.rows[0].id,
+            groups
+        );
+        return tree;
     }
 
     async delete(id: string): Promise<void> {

@@ -4,6 +4,7 @@ import SpeciesRepository from './src/repositories/species.repository';
 import Species from './src/entities/species';
 import Tree from './src/entities/tree';
 import TreeRepository from './src/repositories/trees.repository';
+import Group from './src/entities/group';
 
 const app = express();
 
@@ -20,11 +21,12 @@ app.listen(5000, async () => {
         });
 
         const species = new Species('specie1');
-        const tree = new Tree('tree1', 18, species);
+        const group = new Group('grupo1', 'grupo1');
+        const tree = new Tree('tree1', 18, species, undefined, [group]);
         await new SpeciesRepository().create(species);
         await new TreeRepository().create(tree);
         const result = await new TreeRepository().findMany();
-        console.log(result[0].species)
+        console.log(result![0].species)
     }
     catch (err) {
         console.error(err);
