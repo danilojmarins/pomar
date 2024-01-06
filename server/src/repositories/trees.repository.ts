@@ -1,4 +1,3 @@
-import Group from "../entities/group";
 import Species from "../entities/species";
 import Tree from "../entities/tree";
 import TreeGateway from "../gateways/trees.gateway";
@@ -16,7 +15,7 @@ interface TreeQueryDTO {
         id: string;
         name: string;
         description: string;
-    }[];
+    }[] | undefined;
 };
 
 export default class TreeRepository implements TreeGateway {
@@ -70,18 +69,13 @@ export default class TreeRepository implements TreeGateway {
             return undefined;
         }
         const trees: Tree[] = [];
-        const groups: Group[] = [];
         result.rows.forEach((row) => {
             const species = new Species(row.species[0].description, row.species[0].id);
-            row.groups.forEach((grp) => {
-                const group = new Group(grp.name, grp.description, grp.id);
-                groups.push(group);
-            });
             const tree = new Tree(
                 row.description,
-                row.age, species,
-                row.id,
-                groups
+                row.age,
+                species,
+                row.id
             );
             trees.push(tree);
         });
@@ -132,17 +126,11 @@ export default class TreeRepository implements TreeGateway {
         if (!result.rows || !result.rows[0]) {
             return undefined;
         }
-        const groups: Group[] = [];
         const species = new Species(result.rows[0].species[0].description, result.rows[0].species[0].id);
-        result.rows[0].groups.forEach((grp) => {
-            const group = new Group(grp.name, grp.description, grp.id);
-            groups.push(group);
-        });
         const tree = new Tree(
             result.rows[0].description,
             result.rows[0].age, species,
-            result.rows[0].id,
-            groups
+            result.rows[0].id
         );
         return tree;
     }

@@ -8,13 +8,13 @@ export default class Group {
     private _id: Id;
     private _name: Name;
     private _description: Description;
-    private _trees?: Tree[];
+    private _trees: Tree[];
 
     constructor(
         name: string,
         description: string,
         id = generateId(),
-        trees: Tree[] | undefined = undefined
+        trees: Tree[]
     ) {
         this._id = new Id(id);
         this._name = new Name(name);
@@ -34,7 +34,7 @@ export default class Group {
         return this._description.description;
     }
 
-    get trees(): Tree[] | undefined {
+    get trees(): Tree[] {
         return this._trees;
     }
 }

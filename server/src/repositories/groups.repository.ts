@@ -1,14 +1,44 @@
 import Group from "../entities/group";
+import Species from "../entities/species";
+import Tree from "../entities/tree";
 import GroupGateway from "../gateways/groups.gateway";
 import executeQuery from "../utilities/excute_query";
 
+interface GroupQueryDTO {
+    id: string;
+    name: string;
+    description: string;
+    trees: {
+        id: string;
+        description: string;
+        age: number;
+        species: {
+            id: string;
+            description: string;
+        }[];
+    }[];
+};
+
 export default class GroupRepository implements GroupGateway {
     async create(group: Group): Promise<void> {
+        let in_stmt = "";
+        for (let i = 0; i < group.trees.length; i++) {
+            in_stmt += (i > 0) ? ", :" + i : ":" + i;
+        }
         const query = `
-            INSERT INTO
-                sys.groups
-            VALUES
-                (:id, :name, :description)
+            BEGIN
+                INSERT INTO
+                    sys.groups
+                VALUES
+                    (:id, :name, :description);
+                
+                FOR tree_id IN (${in_stmt}) LOOP
+                    INSERT INTO
+                        sys.trees_groups
+                    VALUES
+                        (tree_id, :id);
+                END LOOP;
+            END;
         `;
         const params = {
             id: group.id,
@@ -28,7 +58,14 @@ export default class GroupRepository implements GroupGateway {
                     SELECT
                         id "id",
                         description "description",
-                        age "age"
+                        age "age",
+                        CURSOR(
+                            SELECT
+                                id "id",
+                                description "description"
+                            FROM sys.species s
+                            WHERE t.species_id = s.id
+                        ) as "species"
                     FROM
                         sys.trees t,
                         sys.trees_groups tg
@@ -39,11 +76,22 @@ export default class GroupRepository implements GroupGateway {
             FROM
                 sys.groups g
         `;
-        const result = await executeQuery<Group>(query);
+        const result = await executeQuery<GroupQueryDTO>(query);
         if (!result.rows) {
             return undefined;
         }
-        return result.rows;
+        const groups: Group[] = [];
+        result.rows.forEach((row) => {
+            const trees: Tree[] = [];
+            row.trees.forEach((tr) => {
+                const species = new Species(tr.species[0].description, tr.species[0].id);
+                const tree = new Tree(tr.description, tr.age, species, tr.id);
+                trees.push(tree);
+            });
+            const group = new Group(row.name, row.description, row.id, trees);
+            groups.push(group);
+        })
+        return groups;
     }
 
     async update(group: Group): Promise<void> {
@@ -74,7 +122,14 @@ export default class GroupRepository implements GroupGateway {
                     SELECT
                         id "id",
                         description "description",
-                        age "age"
+                        age "age",
+                        CURSOR(
+                            SELECT
+                                id "id",
+                                description "description"
+                            FROM sys.species s
+                            WHERE t.species_id = s.id
+                        ) as "species"
                     FROM
                         sys.trees t,
                         sys.trees_groups tg
@@ -88,11 +143,19 @@ export default class GroupRepository implements GroupGateway {
                 id = :id
         `;
         const params = { id: id };
-        const result = await executeQuery<Group>(query, params);
+        const result = await executeQuery<GroupQueryDTO>(query, params);
         if (!result.rows || !result.rows[0]) {
             return undefined;
         }
-        return result.rows[0];
+        const row = result.rows[0];
+        const trees: Tree[] = [];
+        row.trees.forEach((tr) => {
+            const species = new Species(tr.species[0].description, tr.species[0].id);
+            const tree = new Tree(tr.description, tr.age, species, tr.id);
+            trees.push(tree);
+        });
+        const group = new Group(row.name, row.description, row.id, trees);
+        return group;
     }
 
     async delete(id: string): Promise<void> {
