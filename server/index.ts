@@ -1,5 +1,9 @@
 import express from 'express';
 import OracleDB from 'oracledb';
+import SpeciesRepository from './src/repositories/species.repository';
+import Species from './src/entities/species';
+import Tree from './src/entities/tree';
+import TreeRepository from './src/repositories/trees.repository';
 
 const app = express();
 
@@ -15,10 +19,12 @@ app.listen(5000, async () => {
             connectionString: 'oracledb:1521'
         });
 
-        const connection = await OracleDB.getConnection();
-        const result = await connection.execute('SELECT * FROM sys.users');
-
-        console.log(result)
+        const species = new Species('specie1');
+        const tree = new Tree('tree1', 18, species);
+        await new SpeciesRepository().create(species);
+        await new TreeRepository().create(tree);
+        const result = await new TreeRepository().findMany();
+        console.log(result[0].species)
     }
     catch (err) {
         console.error(err);
