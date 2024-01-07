@@ -21,6 +21,9 @@ groupRouter.post('/post/createGroup', async (req: Request, res: Response) => {
         return res.sendStatus(201);
     }
     catch (err) {
+        if (err instanceof Error) {
+            return res.status(400).send(err.message);
+        }
         return res.status(400).send(err);
     }
 });
@@ -38,6 +41,9 @@ groupRouter.put('/put/updateGroup', async (req: Request, res: Response) => {
         return res.sendStatus(201);
     }
     catch (err) {
+        if (err instanceof Error) {
+            return res.status(400).send(err.message);
+        }
         return res.status(400).send(err);
     }
 });
@@ -52,6 +58,9 @@ groupRouter.delete('/delete/deleteGroup', async (req: Request, res: Response) =>
         return res.sendStatus(200);
     }
     catch (err) {
+        if (err instanceof Error) {
+            return res.status(400).send(err.message);
+        }
         return res.status(400).send(err);
     }
 });
@@ -66,6 +75,9 @@ groupRouter.get('/get/getGroupById', async (req: Request, res: Response) => {
         return res.status(200).json(group);
     }
     catch (err) {
+        if (err instanceof Error) {
+            return res.status(400).send(err.message);
+        }
         return res.status(400).send(err);
     }
 });
@@ -77,6 +89,9 @@ groupRouter.get('/get/getGroups', async (req: Request, res: Response) => {
         return res.status(200).json(group);
     }
     catch (err) {
+        if (err instanceof Error) {
+            return res.status(400).send(err.message);
+        }
         return res.status(400).send(err);
     }
 });

@@ -18,6 +18,9 @@ speciesRouter.post('/post/createSpecies', async (req: Request, res: Response) =>
         return res.sendStatus(201);
     }
     catch (err) {
+        if (err instanceof Error) {
+            return res.status(400).send(err.message);
+        }
         return res.status(400).send(err);
     }
 });
@@ -33,6 +36,9 @@ speciesRouter.put('/put/updateSpecies', async (req: Request, res: Response) => {
         return res.sendStatus(201);
     }
     catch (err) {
+        if (err instanceof Error) {
+            return res.status(400).send(err.message);
+        }
         return res.status(400).send(err);
     }
 });
@@ -47,6 +53,9 @@ speciesRouter.delete('/delete/deleteSpecies', async (req: Request, res: Response
         return res.sendStatus(200);
     }
     catch (err) {
+        if (err instanceof Error) {
+            return res.status(400).send(err.message);
+        }
         return res.status(400).send(err);
     }
 });
@@ -58,9 +67,12 @@ speciesRouter.get('/get/getSpeciesById', async (req: Request, res: Response) => 
     const findOneSpeciesUseCase = new FindOneSpeciesUseCase(new SpeciesRepository());
     try {
         const species = await findOneSpeciesUseCase.execute(id);
-        return res.status(200).json({ id: species?.id, description: species?.description });
+        return res.status(200).json(species);
     }
     catch (err) {
+        if (err instanceof Error) {
+            return res.status(400).send(err.message);
+        }
         return res.status(400).send(err);
     }
 });
@@ -69,17 +81,12 @@ speciesRouter.get('/get/getSpecies', async (req: Request, res: Response) => {
     const findSpeciesUseCase = new FindSpeciesUseCase(new SpeciesRepository);
     try {
         const species = await findSpeciesUseCase.execute();
-        const results: { id: string, description: string }[] = [];
-        species?.forEach((spe) => {
-            const specie = {
-                id: spe.id,
-                description: spe.description
-            }
-            results.push(specie);
-        });
-        return res.status(200).json(results);
+        return res.status(200).json(species);
     }
     catch (err) {
+        if (err instanceof Error) {
+            return res.status(400).send(err.message);
+        }
         return res.status(400).send(err);
     }
 });

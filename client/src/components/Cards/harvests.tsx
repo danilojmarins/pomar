@@ -46,7 +46,7 @@ const HarvestCard = (props: HarvestCardProps) => {
     return (
         <CardContainer>
             <CardHeader>
-                <p>Árvore <GiFarmer /></p>
+                <p>Colheita <GiFarmer /></p>
                 <p>#{id.slice(0, 8)}</p>
             </CardHeader>
 

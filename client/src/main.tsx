@@ -9,6 +9,7 @@ import Trees from './pages/Trees.tsx'
 import Groups from './pages/Groups.tsx'
 import Species from './pages/Species.tsx'
 import Layout from './components/Layout/index.tsx'
+import ModalProvider from './contexts/ModalContext.tsx'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -24,8 +25,10 @@ const router = createBrowserRouter(
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
-      <RouterProvider router={router} />
-      <GlobalStyle />
+      <ModalProvider>
+        <RouterProvider router={router} />
+        <GlobalStyle />
+      </ModalProvider>
     </ThemeProvider>
   </React.StrictMode>,
 )

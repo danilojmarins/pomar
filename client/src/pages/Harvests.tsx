@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import HarvestCard from "../components/Cards/harvests";
 import { Harvest } from "../types/harvest";
 import { api } from "../services/api";
 import { CardsContainer, PageTitle } from "./styles";
+import { ModalContext } from "../contexts/ModalContext";
 
 const HarvestPage = () => {
 
@@ -10,16 +11,18 @@ const HarvestPage = () => {
     const [toEdit, setToEdit] = useState<Harvest | undefined>(undefined);
     const [harvests, setHarvests] = useState<Harvest[]>([]);
 
+    const { setShow, setType, setMessage } = useContext(ModalContext);
+
     useEffect(() => {
         api.get('/harvests/get/getHarvests')
         .then((response) => {
-            console.log(response)
+            console.log(response.data)
             setHarvests(response.data);
         })
         .catch((err) => {
-            console.error(err);
+            console.error(err.response.data);
         });
-    }, [deleted]);
+    }, [deleted, setShow, setType, setMessage]);
 
     const getDeleted = (deleted: string) => {
         setDeleted(deleted);

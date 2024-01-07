@@ -6,7 +6,6 @@ import DeleteTreeUseCase from "../usecases/trees/delete-tree.usecase";
 import FindOneTreeUseCase from "../usecases/trees/find-one-tree.usecase";
 import FindTreeUseCase from "../usecases/trees/find-trees.usecase";
 import SpeciesRepository from "../repositories/species.repository";
-import Tree from "../entities/tree";
 
 export const treeRouter = express.Router();
 
@@ -22,6 +21,9 @@ treeRouter.post('/post/createTree', async (req: Request, res: Response) => {
         return res.sendStatus(201);
     }
     catch (err) {
+        if (err instanceof Error) {
+            return res.status(400).send(err.message);
+        }
         return res.status(400).send(err);
     }
 });
@@ -39,6 +41,9 @@ treeRouter.put('/put/updateTree', async (req: Request, res: Response) => {
         return res.sendStatus(201);
     }
     catch (err) {
+        if (err instanceof Error) {
+            return res.status(400).send(err.message);
+        }
         return res.status(400).send(err);
     }
 });
@@ -53,6 +58,9 @@ treeRouter.delete('/delete/deleteTree', async (req: Request, res: Response) => {
         return res.sendStatus(200);
     }
     catch (err) {
+        if (err instanceof Error) {
+            return res.status(400).send(err.message);
+        }
         return res.status(400).send(err);
     }
 });
@@ -64,17 +72,12 @@ treeRouter.get('/get/getTreeById', async (req: Request, res: Response) => {
     const findOneTreeUseCase = new FindOneTreeUseCase(new TreeRepository());
     try {
         const tree = await findOneTreeUseCase.execute(id);
-        return res.status(200).json({
-            id: tree?.id,
-            description: tree?.description,
-            age: tree?.age,
-            species: {
-                id: tree?.species.id,
-                description: tree?.species.description
-            }
-        });
+        return res.status(200).json(tree);
     }
     catch (err) {
+        if (err instanceof Error) {
+            return res.status(400).send(err.message);
+        }
         return res.status(400).send(err);
     }
 });
@@ -82,23 +85,13 @@ treeRouter.get('/get/getTreeById', async (req: Request, res: Response) => {
 treeRouter.get('/get/getTrees', async (req: Request, res: Response) => {
     const findTreeUseCase = new FindTreeUseCase(new TreeRepository);
     try {
-        const tree = await findTreeUseCase.execute();
-        const results: { id: string, description: string, age: number, species: { id: string, description: string } }[] = [];
-        tree?.forEach((tr) => {
-            const tree = {
-                id: tr.id,
-                description: tr.description,
-                age: tr.age,
-                species: {
-                    id: tr.species.id,
-                    description: tr.species.description
-                }
-            }
-            results.push(tree);
-        })
-        return res.status(200).json(results);
+        const trees = await findTreeUseCase.execute();
+        return res.status(200).json(trees);
     }
     catch (err) {
+        if (err instanceof Error) {
+            return res.status(400).send(err.message);
+        }
         return res.status(400).send(err);
     }
 });

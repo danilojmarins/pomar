@@ -22,6 +22,9 @@ harvestRouter.post('/post/createHarvest', async (req: Request, res: Response) =>
         return res.sendStatus(201);
     }
     catch (err) {
+        if (err instanceof Error) {
+            return res.status(400).send(err.message);
+        }
         return res.status(400).send(err);
     }
 });
@@ -40,6 +43,9 @@ harvestRouter.put('/put/updateHarvest', async (req: Request, res: Response) => {
         return res.sendStatus(201);
     }
     catch (err) {
+        if (err instanceof Error) {
+            return res.status(400).send(err.message);
+        }
         return res.status(400).send(err);
     }
 });
@@ -54,6 +60,9 @@ harvestRouter.delete('/delete/deleteHarvest', async (req: Request, res: Response
         return res.sendStatus(200);
     }
     catch (err) {
+        if (err instanceof Error) {
+            return res.status(400).send(err.message);
+        }
         return res.status(400).send(err);
     }
 });
@@ -68,6 +77,9 @@ harvestRouter.get('/get/getHarvestById', async (req: Request, res: Response) => 
         return res.status(200).json(harvest);
     }
     catch (err) {
+        if (err instanceof Error) {
+            return res.status(400).send(err.message);
+        }
         return res.status(400).send(err);
     }
 });
@@ -75,10 +87,16 @@ harvestRouter.get('/get/getHarvestById', async (req: Request, res: Response) => 
 harvestRouter.get('/get/getHarvests', async (req: Request, res: Response) => {
     const findHarvestUseCase = new FindHarvestUseCase(new HarvestRepository);
     try {
-        const harvest = await findHarvestUseCase.execute();
-        return res.status(200).json(harvest);
+        const harvests = await findHarvestUseCase.execute();
+        return res.status(200).json(harvests);
     }
     catch (err) {
+        if (err instanceof Error) {
+            return res.status(400).send(err.message);
+        }
+        if (err instanceof Error) {
+            return res.status(400).send(err.message);
+        }
         return res.status(400).send(err);
     }
 });

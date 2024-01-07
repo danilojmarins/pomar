@@ -45,7 +45,7 @@ const GroupCard = (props: GroupCardProps) => {
     return (
         <CardContainer>
             <CardHeader>
-                <p>Árvore <TbTrees /></p>
+                <p>Grupo <TbTrees /></p>
                 <p>#{id.slice(0, 8)}</p>
             </CardHeader>
 
