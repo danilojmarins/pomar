@@ -32,6 +32,7 @@ services:
       interval: 2s
     environment:
       - ORACLE_PWD=password
+      - ORACLE_CHARACTERSET=AL32UTF8
 
 volumes:
   pomar-oracledb-data:

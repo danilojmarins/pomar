@@ -9,7 +9,7 @@ import { harvestRouter } from './src/routes/harvests.routes';
 const app = express();
 
 app.use(cors({
-    origin: 'client:5173',
+    origin: 'http://localhost:3000',
     methods: [ 'GET', 'POST', 'PUT', 'DELETE' ],
     credentials: true
 }));

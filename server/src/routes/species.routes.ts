@@ -58,7 +58,7 @@ speciesRouter.get('/get/getSpeciesById', async (req: Request, res: Response) => 
     const findOneSpeciesUseCase = new FindOneSpeciesUseCase(new SpeciesRepository());
     try {
         const species = await findOneSpeciesUseCase.execute(id);
-        return res.status(200).json(species);
+        return res.status(200).json({ id: species?.id, description: species?.description });
     }
     catch (err) {
         return res.status(400).send(err);
@@ -69,7 +69,15 @@ speciesRouter.get('/get/getSpecies', async (req: Request, res: Response) => {
     const findSpeciesUseCase = new FindSpeciesUseCase(new SpeciesRepository);
     try {
         const species = await findSpeciesUseCase.execute();
-        return res.status(200).json(species);
+        const results: { id: string, description: string }[] = [];
+        species?.forEach((spe) => {
+            const specie = {
+                id: spe.id,
+                description: spe.description
+            }
+            results.push(specie);
+        });
+        return res.status(200).json(results);
     }
     catch (err) {
         return res.status(400).send(err);
