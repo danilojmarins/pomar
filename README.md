@@ -67,6 +67,6 @@ O contrato que estabelece os métodos que cada repositório deve implementar é 
 
 ![Frontend](/readme_images/frontend.png)
 
-O frontend da aplicação, desenvolvido em React, apresenta quatro páginas principais, cada uma para uma entidade: Colheitas, Árvores, Grupos e Espécies. A página lista todos os registros de determinada entidade, apresentando um formulário para o cadastro e edição de novos registros. Também é possível excluir registros (CASCADE).
+O frontend da aplicação, desenvolvido em React, apresenta cinco páginas principais, uma para o relatório de colheitas com filtros e outras quatro para cada entidade: Colheitas, Árvores, Grupos e Espécies. A página lista todos os registros de determinada entidade, apresentando um formulário para o cadastro e edição de novos registros. Também é possível excluir registros (CASCADE).
 
 Tanto o formulário quanto o card de apresentação da entidade são componentes. Também foi criado um contexto com um componente para exibir o resultado (sucesso ou fracasso) de cada requisição enviada ao servidor.

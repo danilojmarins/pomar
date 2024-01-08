@@ -9,6 +9,7 @@ const Header = () => {
         <HeaderContainer>
             <Title onClick={() => navigate('/colheitas')}>Pomar</Title>
             <Links>
+                <Link onClick={() => navigate('/filter')}>Relatório</Link>
                 <Link onClick={() => navigate('/colheitas')}>Colheitas</Link>
                 <Link onClick={() => navigate('/arvores')}>Árvores</Link>
                 <Link onClick={() => navigate('/grupos')}>Grupos</Link>

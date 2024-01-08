@@ -1,7 +1,7 @@
 import Harvest from "../entities/harvest";
 import Species from "../entities/species";
 import Tree from "../entities/tree";
-import HarvestGateway from "../gateways/harvests.gateway";
+import HarvestGateway, { filteredHarvests } from "../gateways/harvests.gateway";
 import executeQuery from "../utilities/excute_query";
 
 interface HarvestQueryDTO {
@@ -145,7 +145,7 @@ export default class HarvestRepository implements HarvestGateway {
         if (!result.rows || !result.rows[0]) {
             return undefined;
         }
-        
+
         // Cria os objetos das entidades com o resultado do banco
         const row = result.rows[0];
         const species = new Species(row.tree[0].species[0].description, row.tree[0].species[0].id);
@@ -158,5 +158,39 @@ export default class HarvestRepository implements HarvestGateway {
         const query = `DELETE FROM sys.harvests WHERE id = :id`;
         const params = { id: id };
         await executeQuery<Harvest>(query, params);
+    }
+
+    async filter(tree_id?: string, group_id?: string, species_id?: string): Promise<filteredHarvests[] | undefined> {
+        const query = `
+            SELECT
+                h.id "id",
+                h.information "information",
+                h.harvest_date "date",
+                h.weight "weight",
+                t.description "tree_description",
+                t.age "tree_age",
+                s.description "species_description",
+                g.name "group_name"
+            FROM
+                sys.harvests h,
+                sys.trees t,
+                sys.groups g,
+                sys.trees_groups tg,
+                sys.species s
+            WHERE
+                h.tree_id = t.id AND
+                t.species_id = s.id AND
+                t.id = tg.tree_id AND
+                tg.group_id = g.id AND
+                t.id = NVL(:tree_id, t.id) AND
+                g.id = NVL(:group_id, g.id) AND
+                s.id = NVL(:species_id, s.id)
+        `;
+        const params = { tree_id: tree_id ?? null, group_id: group_id ?? null, species_id: species_id ?? null,  };
+        const result = await executeQuery<filteredHarvests>(query, params);
+        if (!result.rows) {
+            return undefined;
+        }
+        return result.rows;
     }
 }

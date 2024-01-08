@@ -10,6 +10,7 @@ import Groups from './pages/Groups.tsx'
 import Species from './pages/Species.tsx'
 import Layout from './components/Layout/index.tsx'
 import ModalProvider from './contexts/ModalContext.tsx'
+import FilterHarvests from './pages/FilterHarvests.tsx'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -19,6 +20,7 @@ const router = createBrowserRouter(
       <Route path='/arvores' element={<Trees />} />
       <Route path='/grupos' element={<Groups />} />
       <Route path='/especies' element={<Species />} />
+      <Route path='filter' element={<FilterHarvests />} />
     </Route>
   )
 )

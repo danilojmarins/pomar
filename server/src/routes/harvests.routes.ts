@@ -6,6 +6,7 @@ import DeleteHarvestUseCase from "../usecases/harvests/delete-harvest.usecase";
 import FindOneHarvestUseCase from "../usecases/harvests/find-one-harvest.usecase";
 import FindHarvestUseCase from "../usecases/harvests/find-harvests.usecase";
 import TreeRepository from "../repositories/trees.repository";
+import FilterHarvestsUseCase from "../usecases/harvests/filter-harvests.usecase";
 
 export const harvestRouter = express.Router();
 
@@ -88,6 +89,28 @@ harvestRouter.get('/get/getHarvests', async (req: Request, res: Response) => {
     const findHarvestUseCase = new FindHarvestUseCase(new HarvestRepository);
     try {
         const harvests = await findHarvestUseCase.execute();
+        return res.status(200).json(harvests);
+    }
+    catch (err) {
+        if (err instanceof Error) {
+            return res.status(400).send(err.message);
+        }
+        if (err instanceof Error) {
+            return res.status(400).send(err.message);
+        }
+        return res.status(400).send(err);
+    }
+});
+
+harvestRouter.get('/get/filterHarvests', async (req: Request, res: Response) => {
+    const {
+        tree_id,
+        group_id,
+        species_id
+    } = req.query;
+    const filterHarvestsUseCase = new FilterHarvestsUseCase(new HarvestRepository);
+    try {
+        const harvests = await filterHarvestsUseCase.execute(tree_id as string, group_id as string, species_id as string);
         return res.status(200).json(harvests);
     }
     catch (err) {
