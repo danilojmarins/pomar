@@ -88,7 +88,7 @@ harvestRouter.get('/get/getHarvests', async (req: Request, res: Response) => {
     const findHarvestUseCase = new FindHarvestUseCase(new HarvestRepository);
     try {
         const harvests = await findHarvestUseCase.execute();
-        return res.cookie('foo', 'bar', { maxAge: 720000, httpOnly: true }).status(200).json(harvests);
+        return res.status(200).json(harvests);
     }
     catch (err) {
         if (err instanceof Error) {

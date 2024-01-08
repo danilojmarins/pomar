@@ -16,19 +16,17 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
     const [loggedin, setLoggedin] = useState<boolean>(true);
 
     useEffect(() => {
-        api.post('/auth/sessionStatus', {}, {
-            withCredentials: true
-        })
+        api.post('/users/post/sessionStatus')
         .then((response) => {
-            if (response.data === 'success') {
+            if (response.data.status === 'success') {
                 setLoggedin(true);
             }
             else {
                 setLoggedin(false);
             }
         })
-        .catch((err) => {
-            console.error(err);
+        .catch(() => {
+            setLoggedin(false);
         });
     }, []);
 
