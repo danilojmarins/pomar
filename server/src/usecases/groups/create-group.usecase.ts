@@ -14,13 +14,15 @@ export default class CreateGroupUseCase {
 
     async execute(name:string, description: string, trees_id: string[]): Promise<void> {
         const trees: Tree[] = [];
-        trees_id.forEach(async (id) => {
+    
+        for (let id of trees_id) {
             const tree = await this._treeGateway.findById(id);
             if (!tree) {
                 throw new Error('tree does not exists');
             }
             trees.push(tree);
-        });
+        };
+
         const group = new Group(name, description, undefined, trees);
         await this._groupGateway.create(group);
     }

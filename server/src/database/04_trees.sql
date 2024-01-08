@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS trees (
     CONSTRAINT fk_trees_species
         FOREIGN KEY (species_id)
         REFERENCES species (id)
+        ON DELETE CASCADE
 );
 
 INSERT INTO sys.trees VALUES ('440643fa-fac5-4ba2-93fc-63801f27b525', 'Carvalho', 36, '04f22d17-cd48-49e3-b380-2540b780c2d0');

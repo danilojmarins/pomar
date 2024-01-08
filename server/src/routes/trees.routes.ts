@@ -51,10 +51,10 @@ treeRouter.put('/put/updateTree', async (req: Request, res: Response) => {
 treeRouter.delete('/delete/deleteTree', async (req: Request, res: Response) => {
     const {
         id
-    } = req.params;
+    } = req.query;
     const deleteTreeUseCase = new DeleteTreeUseCase(new TreeRepository());
     try {
-        await deleteTreeUseCase.execute(id);
+        await deleteTreeUseCase.execute(id as string);
         return res.sendStatus(200);
     }
     catch (err) {
@@ -68,10 +68,10 @@ treeRouter.delete('/delete/deleteTree', async (req: Request, res: Response) => {
 treeRouter.get('/get/getTreeById', async (req: Request, res: Response) => {
     const {
         id
-    } = req.params;
+    } = req.query;
     const findOneTreeUseCase = new FindOneTreeUseCase(new TreeRepository());
     try {
-        const tree = await findOneTreeUseCase.execute(id);
+        const tree = await findOneTreeUseCase.execute(id as string);
         return res.status(200).json(tree);
     }
     catch (err) {

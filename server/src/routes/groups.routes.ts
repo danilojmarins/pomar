@@ -51,10 +51,10 @@ groupRouter.put('/put/updateGroup', async (req: Request, res: Response) => {
 groupRouter.delete('/delete/deleteGroup', async (req: Request, res: Response) => {
     const {
         id
-    } = req.params;
+    } = req.query;
     const deleteGroupUseCase = new DeleteGroupUseCase(new GroupRepository());
     try {
-        await deleteGroupUseCase.execute(id);
+        await deleteGroupUseCase.execute(id as string);
         return res.sendStatus(200);
     }
     catch (err) {
@@ -68,10 +68,10 @@ groupRouter.delete('/delete/deleteGroup', async (req: Request, res: Response) =>
 groupRouter.get('/get/getGroupById', async (req: Request, res: Response) => {
     const {
         id
-    } = req.params;
+    } = req.query;
     const findOneGroupUseCase = new FindOneGroupUseCase(new GroupRepository());
     try {
-        const group = await findOneGroupUseCase.execute(id);
+        const group = await findOneGroupUseCase.execute(id as string);
         return res.status(200).json(group);
     }
     catch (err) {

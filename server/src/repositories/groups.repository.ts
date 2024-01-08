@@ -21,24 +21,11 @@ interface GroupQueryDTO {
 
 export default class GroupRepository implements GroupGateway {
     async create(group: Group): Promise<void> {
-        let in_stmt = "";
-        for (let i = 0; i < group.trees.length; i++) {
-            in_stmt += (i > 0) ? ", :" + i : ":" + i;
-        }
         const query = `
-            BEGIN
-                INSERT INTO
-                    sys.groups
-                VALUES
-                    (:id, :name, :description);
-                
-                FOR tree_id IN (${in_stmt}) LOOP
-                    INSERT INTO
-                        sys.trees_groups
-                    VALUES
-                        (tree_id, :id);
-                END LOOP;
-            END;
+            INSERT INTO
+                sys.groups
+            VALUES
+                (:id, :name, :description)
         `;
         const params = {
             id: group.id,
@@ -46,6 +33,12 @@ export default class GroupRepository implements GroupGateway {
             description: group.description
         };
         await executeQuery<Group>(query, params);
+
+        for (let tree of group.trees) {
+            const query = `INSERT INTO sys.trees_groups VALUES (:tree_id, :group_id)`;
+            const params = { tree_id: tree.id, group_id: group.id };
+            await executeQuery<Group>(query, params);
+        }
     }
 
     async findMany(): Promise<Group[] | undefined> {
@@ -110,6 +103,16 @@ export default class GroupRepository implements GroupGateway {
             description: group.description
         };
         await executeQuery<Group>(query, params);
+
+        const deleteOldTreesQuery = `DELETE FROM sys.trees_groups WHERE group_id = :group_id`;
+        const deleteOldTreesParams = { group_id: group.id };
+        await executeQuery<Group>(deleteOldTreesQuery, deleteOldTreesParams);
+       
+        for (let tree of group.trees) {
+            const query = `INSERT INTO sys.trees_groups VALUES (:tree_id, :group_id)`;
+            const params = { tree_id: tree.id, group_id: group.id };
+            await executeQuery<Group>(query, params);
+        }
     }
 
     async findById(id: string): Promise<Group | undefined> {

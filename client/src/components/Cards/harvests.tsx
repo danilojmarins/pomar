@@ -1,8 +1,9 @@
-import { useState } from "react";
 import { Harvest } from "../../types/harvest";
 import { CardContainer, CardContent, CardHeader, CardOptions } from "./styles";
 import { GiFarmer } from "react-icons/gi";
 import { api } from "../../services/api";
+import { useContext } from "react";
+import { ModalContext } from "../../contexts/ModalContext";
 
 interface HarvestCardProps {
     getDeleted: (deleted: string) => void;
@@ -26,21 +27,35 @@ const HarvestCard = (props: HarvestCardProps) => {
         tree
     } = harvest;
 
-    const [deleted, setDeleted] = useState<string>('');
+    const { setShow, setType, setMessage } = useContext(ModalContext);
 
     const deleteHarvest = async (id: string) => {
-        api.delete('/harvests/delete/deleteHarvest', {
-            params: {
-                id: id
-            }
-        })
-        .then(() => {
-            setDeleted(id);
-            getDeleted(deleted);
-        })
-        .catch((err) => {
-            console.error(err);
-        });
+        if (window.confirm('Deseja excluir a colheita?')) {
+            api.delete('/harvests/delete/deleteHarvest', {
+                params: {
+                    id: id
+                }
+            })
+            .then(() => {
+                getDeleted(id);
+                setShow(true);
+                setType('success');
+                setMessage('Colheita excluída.');
+            })
+            .catch((err) => {
+                console.error(err);
+                setShow(true);
+                setType('error');
+                setMessage(err.response.data);
+            });
+        }
+    }
+
+    const formatDate = (date: string) => {
+        const year = date.slice(0, 4);
+        const month = date.slice(5, 7);
+        const day = date.slice(8, 10);
+        return day + '/' + month + '/' + year;
     }
 
     return (
@@ -57,12 +72,12 @@ const HarvestCard = (props: HarvestCardProps) => {
 
             <CardContent>
                 <p>Data:</p>
-                <p>{date}</p>
+                <p>{formatDate(date)}</p>
             </CardContent>
 
             <CardContent>
                 <p>Peso Bruto:</p>
-                <p>{weight}</p>
+                <p>{weight.toString().replace('.', ',')} KG</p>
             </CardContent>
 
             <CardContent>

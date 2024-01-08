@@ -1,17 +1,17 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import HarvestCard from "../components/Cards/harvests";
 import { Harvest } from "../types/harvest";
 import { api } from "../services/api";
 import { CardsContainer, PageTitle } from "./styles";
-import { ModalContext } from "../contexts/ModalContext";
+import HarvestForm from "../components/Forms/harvests";
+import { AxiosResponse } from "axios";
 
 const HarvestPage = () => {
 
     const [deleted, setDeleted] = useState<string>('');
+    const [saved, setSaved] = useState<AxiosResponse>();
     const [toEdit, setToEdit] = useState<Harvest | undefined>(undefined);
     const [harvests, setHarvests] = useState<Harvest[]>([]);
-
-    const { setShow, setType, setMessage } = useContext(ModalContext);
 
     useEffect(() => {
         api.get('/harvests/get/getHarvests')
@@ -22,7 +22,7 @@ const HarvestPage = () => {
         .catch((err) => {
             console.error(err.response.data);
         });
-    }, [deleted, setShow, setType, setMessage]);
+    }, [deleted, saved]);
 
     const getDeleted = (deleted: string) => {
         setDeleted(deleted);
@@ -32,12 +32,22 @@ const HarvestPage = () => {
         setToEdit(toEdit);
     }
 
+    const getSaved = (saved: AxiosResponse) => {
+        setSaved(saved);
+    }
+
     return (
         <>
             <PageTitle>
                 <h2>Colheitas</h2>
                 <h3>Total: {harvests.length}</h3>
             </PageTitle>
+
+            <HarvestForm
+                getSaved={getSaved}
+                toEdit={toEdit}
+            />
+
             <CardsContainer>
                 {harvests && harvests[0] && harvests.map((harvest) => {
                     return (

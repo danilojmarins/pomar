@@ -10,6 +10,7 @@ import Groups from './pages/Groups.tsx'
 import Species from './pages/Species.tsx'
 import Layout from './components/Layout/index.tsx'
 import ModalProvider from './contexts/ModalContext.tsx'
+import AuthProvider from './contexts/AuthContext.tsx'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -25,10 +26,12 @@ const router = createBrowserRouter(
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
-      <ModalProvider>
-        <RouterProvider router={router} />
-        <GlobalStyle />
-      </ModalProvider>
+      <AuthProvider>
+        <ModalProvider>
+          <RouterProvider router={router} />
+          <GlobalStyle />
+        </ModalProvider>
+      </AuthProvider>
     </ThemeProvider>
   </React.StrictMode>,
 )

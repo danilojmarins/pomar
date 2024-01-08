@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS harvests (
     CONSTRAINT fk_harvests_tree
         FOREIGN KEY (tree_id)
         REFERENCES trees (id)
+        ON DELETE CASCADE
 );
 
 INSERT INTO sys.harvests VALUES ('78165774-20dc-4ee1-ba07-072bc0aaf549', 'OKAY', '2023-12-13', 105.2, '440643fa-fac5-4ba2-93fc-63801f27b525');

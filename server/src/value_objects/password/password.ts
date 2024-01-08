@@ -8,8 +8,8 @@ export default class Password {
         if (password.trim().length < 8) {
             throw new Error('password must have at least 8 characters');
         }
-        if (password.trim().length > 64) {
-            throw new Error('password must have at most 64 characters');
+        if (password.trim().length > 255) {
+            throw new Error('password must have at most 255 characters');
         }
 
         this._password = password.trim();

@@ -1,8 +1,9 @@
-import { useState } from "react";
 import { Group } from "../../types/group";
 import { CardContainer, CardContent, CardHeader, CardOptions } from "./styles";
 import { TbTrees } from "react-icons/tb";
 import { api } from "../../services/api";
+import { useContext } from "react";
+import { ModalContext } from "../../contexts/ModalContext";
 
 interface GroupCardProps {
     getDeleted: (deleted: string) => void;
@@ -25,21 +26,28 @@ const GroupCard = (props: GroupCardProps) => {
         trees
     } = group;
 
-    const [deleted, setDeleted] = useState<string>('');
+    const { setShow, setType, setMessage } = useContext(ModalContext);
 
     const deleteGroup = async (id: string) => {
-        api.delete('/groups/delete/deleteGroup', {
-            params: {
-                id: id
-            }
-        })
-        .then(() => {
-            setDeleted(id);
-            getDeleted(deleted);
-        })
-        .catch((err) => {
-            console.error(err);
-        });
+        if (window.confirm('Deseja excluir o grupo?')) {
+            api.delete('/groups/delete/deleteGroup', {
+                params: {
+                    id: id
+                }
+            })
+            .then(() => {
+                getDeleted(id);
+                setShow(true);
+                setType('success');
+                setMessage('Grupo excluído.');
+            })
+            .catch((err) => {
+                console.error(err);
+                setShow(true);
+                setType('error');
+                setMessage(err.response.data);
+            });
+        }
     }
 
     return (

@@ -26,12 +26,12 @@ export default class HarvestRepository implements HarvestGateway {
             INSERT INTO
                 sys.harvests
             VALUES
-                (:id, :information, :date, :weight, :tree_id)
+                (:id, :information, :harvest_date, :weight, :tree_id)
         `;
         const params = {
             id: harvest.id,
             information: harvest.information,
-            date: harvest.date,
+            harvest_date: harvest.date,
             weight: harvest.weight,
             tree_id: harvest.tree.id
         };
@@ -85,7 +85,7 @@ export default class HarvestRepository implements HarvestGateway {
                 sys.harvests
             SET
                 information = :information,
-                harvest_date = :date,
+                harvest_date = :harvest_date,
                 weight = :weight,
                 tree_id = :tree_id
             WHERE
@@ -94,7 +94,7 @@ export default class HarvestRepository implements HarvestGateway {
         const params = {
             id: harvest.id,
             information: harvest.information,
-            date: harvest.date,
+            harvest_date: harvest.date,
             weight: harvest.weight,
             tree_id: harvest.tree.id
         };

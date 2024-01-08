@@ -1,8 +1,9 @@
-import { useState } from "react";
 import { Species } from "../../types/species";
 import { CardContainer, CardContent, CardHeader, CardOptions } from "./styles";
 import { PiPlant } from "react-icons/pi";
 import { api } from "../../services/api";
+import { useContext } from "react";
+import { ModalContext } from "../../contexts/ModalContext";
 
 interface SpeciesCardProps {
     getDeleted: (deleted: string) => void;
@@ -23,21 +24,28 @@ const SpeciesCard = (props: SpeciesCardProps) => {
         description
     } = species;
 
-    const [deleted, setDeleted] = useState<string>('');
+    const { setShow, setType, setMessage } = useContext(ModalContext);
 
     const deleteSpecies = async (id: string) => {
-        api.delete('/species/delete/deleteSpecies', {
-            params: {
-                id: id
-            }
-        })
-        .then(() => {
-            setDeleted(id);
-            getDeleted(deleted);
-        })
-        .catch((err) => {
-            console.error(err);
-        });
+        if (window.confirm('Árvores, grupos e colheitas talvez sejam excluídos.\nDeseja prosseguir?')) {
+            api.delete('/species/delete/deleteSpecies', {
+                params: {
+                    id: id
+                }
+            })
+            .then(() => {
+                getDeleted(id);
+                setShow(true);
+                setType('success');
+                setMessage('Espécie excluída.');
+            })
+            .catch((err) => {
+                console.error(err);
+                setShow(true);
+                setType('error');
+                setMessage(err.response.data);
+            });
+        }
     }
 
     return (

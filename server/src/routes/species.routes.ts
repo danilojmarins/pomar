@@ -46,10 +46,10 @@ speciesRouter.put('/put/updateSpecies', async (req: Request, res: Response) => {
 speciesRouter.delete('/delete/deleteSpecies', async (req: Request, res: Response) => {
     const {
         id
-    } = req.params;
+    } = req.query;
     const deleteSpeciesUseCase = new DeleteSpeciesUseCase(new SpeciesRepository());
     try {
-        await deleteSpeciesUseCase.execute(id);
+        await deleteSpeciesUseCase.execute(id as string);
         return res.sendStatus(200);
     }
     catch (err) {
@@ -63,10 +63,10 @@ speciesRouter.delete('/delete/deleteSpecies', async (req: Request, res: Response
 speciesRouter.get('/get/getSpeciesById', async (req: Request, res: Response) => {
     const {
         id
-    } = req.params;
+    } = req.query;
     const findOneSpeciesUseCase = new FindOneSpeciesUseCase(new SpeciesRepository());
     try {
-        const species = await findOneSpeciesUseCase.execute(id);
+        const species = await findOneSpeciesUseCase.execute(id as string);
         return res.status(200).json(species);
     }
     catch (err) {

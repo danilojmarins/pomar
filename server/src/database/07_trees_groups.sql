@@ -4,10 +4,12 @@ CREATE TABLE IF NOT EXISTS trees_groups (
     PRIMARY KEY (tree_id, group_id),
     CONSTRAINT fk_trees_groups_tree
         FOREIGN KEY (tree_id)
-        REFERENCES trees (id),
+        REFERENCES trees (id)
+        ON DELETE CASCADE,
     CONSTRAINT fk_trees_groups_group
         FOREIGN KEY (group_id)
         REFERENCES groups (id)
+        ON DELETE CASCADE
 );
 
 INSERT INTO sys.trees_groups VALUES ('440643fa-fac5-4ba2-93fc-63801f27b525', 'f1e24c47-7915-4c85-8641-570e143d2e50');

@@ -53,10 +53,10 @@ harvestRouter.put('/put/updateHarvest', async (req: Request, res: Response) => {
 harvestRouter.delete('/delete/deleteHarvest', async (req: Request, res: Response) => {
     const {
         id
-    } = req.params;
+    } = req.query;
     const deleteHarvestUseCase = new DeleteHarvestUseCase(new HarvestRepository());
     try {
-        await deleteHarvestUseCase.execute(id);
+        await deleteHarvestUseCase.execute(id as string);
         return res.sendStatus(200);
     }
     catch (err) {
@@ -70,10 +70,10 @@ harvestRouter.delete('/delete/deleteHarvest', async (req: Request, res: Response
 harvestRouter.get('/get/getHarvestById', async (req: Request, res: Response) => {
     const {
         id
-    } = req.params;
+    } = req.query;
     const findOneHarvestUseCase = new FindOneHarvestUseCase(new HarvestRepository());
     try {
-        const harvest = await findOneHarvestUseCase.execute(id);
+        const harvest = await findOneHarvestUseCase.execute(id as string);
         return res.status(200).json(harvest);
     }
     catch (err) {
@@ -88,7 +88,7 @@ harvestRouter.get('/get/getHarvests', async (req: Request, res: Response) => {
     const findHarvestUseCase = new FindHarvestUseCase(new HarvestRepository);
     try {
         const harvests = await findHarvestUseCase.execute();
-        return res.status(200).json(harvests);
+        return res.cookie('foo', 'bar', { maxAge: 720000, httpOnly: true }).status(200).json(harvests);
     }
     catch (err) {
         if (err instanceof Error) {
