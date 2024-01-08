@@ -128,13 +128,13 @@ const GroupForm = (props: GroupFormProps) => {
 
                 {treeId[0] &&
                     <SelectedOptions>
-                        {treeId.map(id => {
+                        {treeId.map(id => {     // hashmap pode ser implementado para acessar O(1)
                             const tree = trees.find(tree => tree.id === id);
                             return (
                                 <p>
                                     <span onClick={() => {
                                         setTreeId(ids => {
-                                            return ids.filter(value => value !== id);
+                                            return ids.filter(value => value !== id);   // exclui uma árvore da lista
                                         });
                                     }}>
                                         <IoMdClose />

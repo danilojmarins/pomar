@@ -26,12 +26,14 @@ export default class TreeRepository implements TreeGateway {
             VALUES
                 (:id, :description, :age, :species_id)
         `;
+
         const params = {
             id: tree.id,
             description: tree.description,
             age: tree.age,
             species_id: tree.species.id
         };
+
         await executeQuery<Tree>(query, params);
     }
 
@@ -64,10 +66,13 @@ export default class TreeRepository implements TreeGateway {
             FROM
                 sys.trees t
         `;
+
         const result = await executeQuery<TreeQueryDTO>(query);
         if (!result.rows) {
             return undefined;
         }
+
+        // Cria os objetos das entidades com o resultado do banco
         const trees: Tree[] = [];
         result.rows.forEach((row) => {
             const species = new Species(row.species[0].description, row.species[0].id);
@@ -79,6 +84,7 @@ export default class TreeRepository implements TreeGateway {
             );
             trees.push(tree);
         });
+
         return trees;
     }
 
@@ -93,12 +99,14 @@ export default class TreeRepository implements TreeGateway {
             WHERE
                 id = :id
         `;
+
         const params = {
             id: tree.id,
             description: tree.description,
             age: tree.age,
             species_id: tree.species.id
         };
+
         await executeQuery<Tree>(query, params);
     }
 
@@ -121,17 +129,22 @@ export default class TreeRepository implements TreeGateway {
             WHERE
                 id = :id
         `;
+
         const params = { id: id };
+
         const result = await executeQuery<TreeQueryDTO>(query, params);
         if (!result.rows || !result.rows[0]) {
             return undefined;
         }
+
+        // Cria os objetos das entidades com o resultado do banco
         const species = new Species(result.rows[0].species[0].description, result.rows[0].species[0].id);
         const tree = new Tree(
             result.rows[0].description,
             result.rows[0].age, species,
             result.rows[0].id
         );
+        
         return tree;
     }
 

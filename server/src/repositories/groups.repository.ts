@@ -21,19 +21,23 @@ interface GroupQueryDTO {
 
 export default class GroupRepository implements GroupGateway {
     async create(group: Group): Promise<void> {
+        // Cria um grupo
         const query = `
             INSERT INTO
                 sys.groups
             VALUES
                 (:id, :name, :description)
         `;
+
         const params = {
             id: group.id,
             name: group.name,
             description: group.description
         };
+
         await executeQuery<Group>(query, params);
 
+        // Cria a relação na tabela de relacionamento para cada árvore do grupo
         for (let tree of group.trees) {
             const query = `INSERT INTO sys.trees_groups VALUES (:tree_id, :group_id)`;
             const params = { tree_id: tree.id, group_id: group.id };
@@ -69,10 +73,13 @@ export default class GroupRepository implements GroupGateway {
             FROM
                 sys.groups g
         `;
+
         const result = await executeQuery<GroupQueryDTO>(query);
         if (!result.rows) {
             return undefined;
         }
+
+        // Cria os objetos das entidades com o resultado do banco
         const groups: Group[] = [];
         result.rows.forEach((row) => {
             const trees: Tree[] = [];
@@ -83,7 +90,8 @@ export default class GroupRepository implements GroupGateway {
             });
             const group = new Group(row.name, row.description, row.id, trees);
             groups.push(group);
-        })
+        });
+
         return groups;
     }
 
@@ -97,17 +105,21 @@ export default class GroupRepository implements GroupGateway {
             WHERE
                 id = :id
         `;
+
         const params = {
             id: group.id,
             name: group.name,
             description: group.description
         };
+
         await executeQuery<Group>(query, params);
 
+        // Exclui todos os registros antigos da tabela de relacionamentos para o grupo
         const deleteOldTreesQuery = `DELETE FROM sys.trees_groups WHERE group_id = :group_id`;
         const deleteOldTreesParams = { group_id: group.id };
         await executeQuery<Group>(deleteOldTreesQuery, deleteOldTreesParams);
        
+        // Insere todos os novos relacionamentos para cada árvore do grupo
         for (let tree of group.trees) {
             const query = `INSERT INTO sys.trees_groups VALUES (:tree_id, :group_id)`;
             const params = { tree_id: tree.id, group_id: group.id };
@@ -145,11 +157,15 @@ export default class GroupRepository implements GroupGateway {
             WHERE
                 id = :id
         `;
+
         const params = { id: id };
+
         const result = await executeQuery<GroupQueryDTO>(query, params);
         if (!result.rows || !result.rows[0]) {
             return undefined;
         }
+
+        // Cria os objetos das entidades com o resultado do banco
         const row = result.rows[0];
         const trees: Tree[] = [];
         row.trees.forEach((tr) => {
@@ -158,6 +174,7 @@ export default class GroupRepository implements GroupGateway {
             trees.push(tree);
         });
         const group = new Group(row.name, row.description, row.id, trees);
+        
         return group;
     }
 

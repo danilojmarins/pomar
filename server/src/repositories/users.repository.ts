@@ -18,6 +18,7 @@ export default class UserRepository implements UserGateway {
             email: user.email,
             password: hashPassword(user.password)
         };
+        
         await executeQuery<User>(query, params);
     }
 
@@ -33,14 +34,23 @@ export default class UserRepository implements UserGateway {
             WHERE
                 email = :email
         `;
+
         const params = {
             email: email
         };
+
         const result = await executeQuery<User>(query, params);
         if (!result.rows || !result.rows[0]) {
             throw new Error('email informado não existe');
         }
-        const user = new User(result.rows[0].name, result.rows[0].email, result.rows[0].password, result.rows[0].id);
+
+        const user = new User(
+            result.rows[0].name,
+            result.rows[0].email,
+            result.rows[0].password,
+            result.rows[0].id
+        );
+
         return user;
     }
 }

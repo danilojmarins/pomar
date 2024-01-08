@@ -28,6 +28,7 @@ export default class HarvestRepository implements HarvestGateway {
             VALUES
                 (:id, :information, :harvest_date, :weight, :tree_id)
         `;
+
         const params = {
             id: harvest.id,
             information: harvest.information,
@@ -35,6 +36,7 @@ export default class HarvestRepository implements HarvestGateway {
             weight: harvest.weight,
             tree_id: harvest.tree.id
         };
+
         await executeQuery<Harvest>(query, params);
     }
 
@@ -65,17 +67,21 @@ export default class HarvestRepository implements HarvestGateway {
             FROM
                 sys.harvests h
         `;
+
         const result = await executeQuery<HarvestQueryDTO>(query);
         if (!result.rows) {
             return undefined;
         }
+
+        // Cria os objetos das entidades com o resultado do banco
         const harvests: Harvest[] = [];
         result.rows.forEach((row) => {
             const species = new Species(row.tree[0].species[0].description, row.tree[0].species[0].id);
             const tree = new Tree(row.tree[0].description, row.tree[0].age, species, row.tree[0].id);
             const harvest = new Harvest(row.information, row.date, row.weight, tree, row.id);
             harvests.push(harvest);
-        })
+        });
+
         return harvests;
     }
 
@@ -91,6 +97,7 @@ export default class HarvestRepository implements HarvestGateway {
             WHERE
                 id = :id
         `;
+
         const params = {
             id: harvest.id,
             information: harvest.information,
@@ -98,6 +105,7 @@ export default class HarvestRepository implements HarvestGateway {
             weight: harvest.weight,
             tree_id: harvest.tree.id
         };
+
         await executeQuery<Harvest>(query, params);
     }
 
@@ -130,11 +138,15 @@ export default class HarvestRepository implements HarvestGateway {
             WHERE
                 id = :id
         `;
+
         const params = { id: id };
+
         const result = await executeQuery<HarvestQueryDTO>(query, params);
         if (!result.rows || !result.rows[0]) {
             return undefined;
         }
+        
+        // Cria os objetos das entidades com o resultado do banco
         const row = result.rows[0];
         const species = new Species(row.tree[0].species[0].description, row.tree[0].species[0].id);
         const tree = new Tree(row.tree[0].description, row.tree[0].age, species, row.tree[0].id);
